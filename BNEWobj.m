@@ -415,5 +415,33 @@ classdef BNEWobj
             
             R2 = R'*R;
         end
+        
+        function BN = loadWaveletCoeff(BN,coeffile)
+            % load in wavelet coefficients and rescaling functions from file
+            % data files are made using savewaveletcoeff.m           
+            
+            load(coeffile,'wavetype','wavedeg','Afunc','Bfunc','ws','what')
+            
+            % check that wavelet type and degree match up
+            if (~strcmp(BN.WaveType,wavetype))
+                error('Wavelet coefficient file does not have the right wavelet type: %s %s', WL.WaveType,wavetype)
+            end
+            
+            if (strcmp(wavetype,'svg') || strcmp(wavetype,'poly'))
+                if (BN.WaveDeg ~= wavedeg)
+                    error('Wavelet coefficient file does not have the right degree: %d %d', WL.WaveDeg, wavedeg)
+                end
+            end   
+            
+            for scc = 1:length(BN.Nvals)
+                nn = BN.Nvals(scc);
+                BN.Afunc{scc} = Afunc(nn,:);
+                BN.Bfunc{scc} = Bfunc(nn,:);
+                
+                BN.Ws{scc} = ws{nn};
+                BN.Whats{scc} = what{nn};
+            end
+            
+        end
     end
 end
